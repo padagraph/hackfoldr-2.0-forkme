@@ -1,6 +1,6 @@
 // prepare to handle url
 var paths = location.pathname.split('/') || [];
-var ethercalc_name     = paths[1] || "___DEFAULT_ETHERCALC_PATH___";
+var ethercalc_name     = paths[1] || "nimp";
 var current_iframe_url = paths[2] ? unescape(unescape(paths[2])) : null;
 var history_state={};
 // prepare to handle backend data (from ethercalc or google spreadsheet)
