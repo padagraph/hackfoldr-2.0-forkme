@@ -15,13 +15,13 @@ block body
         .ui.dropdown.icon.item.about
           i.icon.help
           include help-menu
+        //- .right.icon.item.zoom.ui.dropdown
+          i.icon.zoom.in
+          include zoom-menu
         a.right.item.expand.button.collapsed.mode.hidden.desktop.only
           i.icon.arrow.right(data-content="展開")
         a.right.item.collapse.button.expanded.mode.desktop.only
           i.icon.arrow.left(data-content="收合")
-        .right.icon.item.zoom.ui.dropdown
-          i.icon.zoom.in
-          include zoom-menu
 
     //- on mobile / tablet / phone, nav bar content is merged into this bar
     nav#topbar
@@ -55,7 +55,7 @@ block body
               i.icon.help
               include help-menu
         .right.icon.item.zoom.ui.dropdown.tablet.only
-          i.icon.zoom.in
+          i.icon.share
           include zoom-menu
         a.right.icon.item.edit.table(target="iframe")
           i.icon.pencil(data-content="編輯")

@@ -253,7 +253,7 @@ var compile_json = function(rows){
 
     // append link item to #toc menu
     if(depth == 1){
-      $('#toc .ui.accordion:last').find('.menu').append($link_element);
+      $('#toc .ui.accordion:last').find('.content').append($link_element);
     }else{
       $('#toc .ui.vertical.menu').append($link_element);
     }
@@ -282,7 +282,9 @@ var compile_json = function(rows){
     }
   }
 
-  var accordion_template_source = '<div class="ui accordion"><div id="{{id}}" class="title header item {{mode}}"><i class="icon folder closed"></i><i class="icon folder open hidden" data-content="{{title}}" style="display: none;"></i>{{title}}</div><div class="content ui small sortable menu {{mode}}"></div></div>';      var accordion_template = Handlebars.compile(accordion_template_source);
+  var accordion_template_source = '<div class="ui item accordion"><div id="{{id}}" class="title {{mode}}"><i class="icon folder" data-content="{{title}}"></i>{{title}}</div><div class="ui content menu sortable {{mode}}"></div></div>';      
+  
+  var accordion_template = Handlebars.compile(accordion_template_source);
 
   // for foldr items
   var add_accordion = function(row_index, row){
@@ -467,7 +469,7 @@ var compile_json = function(rows){
       return false;
     }
   };
-  $("#toc a.link.item").filter(link_is_current_url_or_not).addClass("active").parent(".content").addClass("active").prev(".header").addClass("active");
+  $("#toc a.link.item").filter(link_is_current_url_or_not).addClass("active").parent(".content").addClass("active").prev(".title").addClass("active");
 
   // auto expand #toc accordion when number < 4
   var children_are_less_or_not = function(){
@@ -477,11 +479,14 @@ var compile_json = function(rows){
       return false;
     }
   };
-  $("#toc .ui.accordion .content").filter(children_are_less_or_not).not(".collapsed-subfoldr").addClass("active").prev(".header").addClass("active");
+  $("#toc .ui.accordion .content").filter(children_are_less_or_not).not(".collapsed-subfoldr").addClass("active").prev(".title").addClass("active");
 
   // change foldr icons for auto activated subfoldrs
-  $("#toc .ui.accordion .header.active .icon.folder.closed").hide();
-  $("#toc .ui.accordion .header.active .icon.folder.open").show();
+
+//  $("#toc .ui.accordion .small.title.active .icon.folder.closed").hide();
+  $("#toc .ui.accordion .title.active .icon.folder").show();
+  $("#toc .ui.accordion .title.active .icon.folder").toggleClass('open');
+  //$("#toc .ui.accordion .small.title.active .icon.folder.open").show();
 
   // make #toc sortable on edit page by default
   if(current_iframe_url == "edit"){
@@ -751,8 +756,8 @@ $("#toc").on("click tap", "a.link.item", function(){
 });
 
 // toggle folder icons on click
-$("#toc").on("click tap", ".header.item", function(){
-  $(this).find('.icon.folder').toggle();
+$("#toc").on("click tap", ".title", function(){
+  $(this).find('.icon.folder').toggleClass('open');
 });
 
 // when click on edit table button
