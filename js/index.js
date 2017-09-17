@@ -96,6 +96,7 @@ var compile_json = function(rows){
   var link_label_template = Handlebars.compile(link_label_template_source);
 
   // for link items
+  var padagraph_ids = {}
   var add_link = function(row_index, row){
 
     // prepare to handle link items. these variables will be used with link_template.
@@ -113,6 +114,20 @@ var compile_json = function(rows){
     //for(key in link_options){
     //  $link_element.attr(key, link_options[key]);
     //}
+
+    // PDG : build index
+    if (row[2].match(/PDG:/)){
+      var [_,id] = row[2].match(/PDG:([a-zA-Z]+)/);
+      padagraph_ids[id] = link_url;
+    }
+  
+    //PDG: transform URL
+    if(link_url.match(/PDG:[a-zA-Z]+/)){ 
+      var [_,id] = row[0].match(/PDG:([a-zA-Z]+)/);
+      link_url = "http://botapad.padagraph.io/import/igraph.html?s=" + padagraph_ids[id] + "&nofoot=1&gid=" + id;
+      row[0] = link_url
+      row[3] = "red graph"
+    }
 
     // parse link options. version 2
     if(row[2].match(/blank/)){
@@ -282,7 +297,7 @@ var compile_json = function(rows){
     }
   }
 
-  var accordion_template_source = '<div class="ui item accordion"><div id="{{id}}" class="title {{mode}}"><i class="icon folder" data-content="{{title}}"></i>{{title}}</div><div class="ui content menu sortable {{mode}}"></div></div>';      
+  var accordion_template_source = '<div class="ui accordion"><div id="{{id}}" class="title {{mode}}"><i class="icon folder" data-content="{{title}}"></i>{{title}}</div><div class="ui content menu sortable {{mode}}"></div></div>';      
   
   var accordion_template = Handlebars.compile(accordion_template_source);
 
