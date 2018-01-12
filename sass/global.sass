@@ -199,6 +199,7 @@ a, a:link
 
 #wrapper
   position: absolute
+  position: relative
   left: 0
   top: 0
   bottom: 0
@@ -209,7 +210,7 @@ a, a:link
   +transition-timing-function(ease)
 
   @media screen and (max-width: 1024px)
-    padding-top: 2.75rem
+    padding-top: 0 //2.75rem
     padding-left: 0
     height: auto
 
@@ -218,6 +219,15 @@ a, a:link
       padding-left: 20rem
     &.desktop-collapsed-layout
       padding-left: 3rem
+
+  #mainzone
+    position: relative
+    width: 100%
+    height: 100%
+    left: 0
+    top: 0
+    bottom: 0
+    right: 0
 
   .frame
     position: relative
@@ -228,7 +238,7 @@ a, a:link
     bottom: 0
     right: 0
 
-  #iframe
+  iframe
     +box-shadow(0 0 0.5rem rgba(#000,0.5))
     width: 100%
     height: 100%

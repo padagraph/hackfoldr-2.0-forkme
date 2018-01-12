@@ -7,6 +7,7 @@ var history_state={};
 var csv_api_source = "";
 var csv_api_source_type = "";
 var csv_api_source_id = ethercalc_name;
+$("#edittab").attr("data-url",'https://ethercalc.org/'+csv_api_source_id);
 // prepare to accept foldr options set in ethercalc
 var hide_sheet = false;
 var sort_sheet = true;
@@ -88,7 +89,7 @@ var compile_json = function(rows){
   // #toc menu items are at root level by default. if depth == 1, they will be in level 1 submenu, which is wrapped inside an semantic ui accordion
   var depth = 0
 
-  var link_template_source ='<a href="{{url}}" target="{{target}}" id="{{id}}" class="{{type}} item"><i class="icon {{icon}}" data-content="{{subject}}"></i>{{subject}}</a>';
+  var link_template_source ='<a id="{{id}}" data-tab="tab-{{id}}" class="{{type}} item"><i class="icon {{icon}}" data-content="{{subject}}"></i>{{subject}}</a>';
   //var link_template_source ='<a href="{{url}}" target="{{target}}" class="{{type}} item"><i class="icon {{icon}}"></i>{{subject}}</a>';
   var link_template = Handlebars.compile(link_template_source);
 
@@ -97,6 +98,7 @@ var compile_json = function(rows){
 
   // for link items
   var padagraph_ids = {}
+  var activeTab = "active" // to activate the first tab
   var add_link = function(row_index, row){
 
     // prepare to handle link items. these variables will be used with link_template.
@@ -272,7 +274,10 @@ var compile_json = function(rows){
     }else{
       $('#toc .ui.vertical.menu').append($link_element);
     }
-
+    // append tab item to the main page
+    var newTab = $('<div class="frame ui bottom attached tab" data-tab="tab-'+ (row_index + 1 ) +'" data-url="'+ link_url +'"><iframe name="iframe-' +(row_index + 1) + '"/></div>');
+    $('#mainzone').append(newTab);
+    //newTab.tab({onLoad: function(a,b,c) {console.log('coucou')}})
     // set iframe src?
     if(current_iframe_url == "edit"){
       if(csv_api_source_type=="ethercalc"){
@@ -444,6 +449,7 @@ var compile_json = function(rows){
   var new_window_icon = "<i class='icon forward mail'></i>";
   var open_link_in_new_window_or_not = function(){
     link_url = $(this).attr("href");
+    link_url = link_url ? link_url : "ras";
     if(link_url.match(/^.*.plus.google.com\//)) {
       return true;
     } else if(link_url.match(/^.*.kktix.cc\//)) {
@@ -514,6 +520,9 @@ var compile_json = function(rows){
 
   // enable popup
   $('i.icon').popup();
+
+  // enable tabs
+  $('#toc a.link.item').tab({onFirstLoad: function(a,b,c) {var u = this.attributes['data-url'].value  ; this.firstChild.setAttribute('src', u) }});
 }
 
 // prepare to load or refresh csv data
@@ -780,7 +789,7 @@ $("#topbar .edit.table").on("click tap", function(){
   // show sheet
   if(!hide_sheet){
     if(csv_api_source_type=="ethercalc"){
-      $("#topbar .edit.table").attr("href",'https://ethercalc.org/'+csv_api_source_id);
+      $("#topbar .edit.table").attr("data-url",'https://ethercalc.org/'+csv_api_source_id);
       // make foldr items sortable
       if(sort_sheet){
         $("#toc .sortable").sortable(sort_action);
@@ -789,11 +798,11 @@ $("#topbar .edit.table").on("click tap", function(){
       $("#topbar .edit.table").attr("href",'https://docs.google.com/spreadsheets/d/'+csv_api_source_id+'/edit');
     }
     // change url
-    history.pushState(history_state,'', '/'+ethercalc_name+'/edit');
+    //history.pushState(history_state,'', '/'+ethercalc_name+'/edit');
     // change page title
     $("title").text("編輯 | "+current_foldr_name+" | hackfoldr");
     // inactive #toc items
-    $("#toc a.link.item").removeClass("active");
+    //$("#toc a.link.item").removeClass("active");
   }
   // switch icon
   $("#topbar .edit.table").hide();
@@ -806,3 +815,7 @@ $("#topbar .foldr.title").attr("href",'/'+ethercalc_name);
 
 // enable popup
 $('i.icon').popup();
+
+// enable tabs
+$('.helptab').tab();
+$('.edittab').tab({onFirstLoad: function(a,b,c) {var u = this.attributes['data-url'].value  ; this.firstChild.setAttribute('src', u) }});

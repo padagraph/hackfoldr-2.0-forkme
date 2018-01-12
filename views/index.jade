@@ -60,7 +60,7 @@ block body
         //- .right.icon.item.zoom.ui.dropdown.tablet.only
           i.icon.share
           include zoom-menu
-        a.right.icon.item.edit.table(target="iframe")
+        a.right.icon.item.edit.table.edittab(data-tab="edit-tab")
           i.icon.pencil(data-content="edit")
         a.right.icon.item.refresh.table.hidden
           i.icon.repeat(data-content="refresh")
@@ -101,11 +101,15 @@ block body
           button.ui.submit.button.green.small.add.create create and add to foldr
     #pdg
       .ui.fluid.vertical.menu.sortable
-        a.ui.link.small.header.item(href="https://hackmd.io/s/Sywx_B3cZ#", target="iframe") help
+        a.ui.link.small.header.item.helptab(data-tab="help-tab") help
           i.icon.book
       nav#toc
         .ui.fluid.vertical.menu.sortable
   #wrapper.desktop-expanded-layout
 
-    .frame
-      iframe#iframe(name="iframe")
+    #mainzone
+      //iframe#iframe(name="iframe")
+      #edittab.frame.ui.bottom.attached.tab(data-tab="edit-tab")
+        iframe
+      .frame.ui.bottom.attached.tab.active(data-tab="help-tab")
+        iframe(src="https://hackmd.io/s/Sywx_B3cZ#")
