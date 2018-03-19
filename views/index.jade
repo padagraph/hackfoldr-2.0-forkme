@@ -103,7 +103,7 @@ block body
       .ui.fluid.vertical.menu.sortable
         a.ui.link.small.header.item.helptab(data-tab="help-tab") help
           i.icon.book
-        a.ui.link.small.header.item.helptab(data-tab="cafe-tab") chat with us
+        a.ui.link.small.header.item.cafetab(data-tab="cafe-tab") chat with us
           i.icon.comments.outline
       nav#toc
         .ui.fluid.vertical.menu.sortable
@@ -113,7 +113,7 @@ block body
       //iframe#iframe(name="iframe")
       #edittab.frame.ui.bottom.attached.tab(data-tab="edit-tab")
         iframe
-      .frame.ui.bottom.attached.tab.active(data-tab="help-tab")
+      .frame.ui.bottom.attached.tab(data-tab="help-tab")
         iframe(name="iframe",src="https://hackmd.io/s/Sywx_B3cZ#")
       .frame.ui.bottom.attached.tab(data-tab="cafe-tab")
         iframe(src="https://gitter.im/padagraph/cafe")

@@ -1,5 +1,5 @@
 // prepare to handle url
-var paths = location.pathname.split('/') || [];
+var paths = decodeURI(location.pathname).split('/') || [];
 var ethercalc_name     = paths[1] || "pdgio";
 var current_iframe_url = paths[2] ? unescape(unescape(paths[2])) : null;
 var history_state={};
@@ -18,6 +18,7 @@ var iframe_src;
 var foldr_histories = JSON.parse(localStorage.getItem("hackfoldr")) || [];
 var foldr_scale = JSON.parse(localStorage.getItem("hackfoldr-scale")) || "";
 
+var tabnames_mapping = {'cafe': 'cafe-tab', 'help': 'help-tab'};
 // check where the csv will come from, ethercalc or gsheet?
 if(ethercalc_name.length < 40){
   csv_api_source = 'https://ethercalc.org/_/'+ethercalc_name+'/csv';
@@ -226,7 +227,8 @@ var compile_json = function(rows){
     var context = {id: row_index+1, url: link_url, subject: row[1], icon: link_icon, type: link_type, target: link_target};
     // and send it into the html template (meanwhile, assign it an id for jquery sortable)
     var $link_element = $(link_template(context));
-
+    tabnames_mapping[row[1]] = 'tab-'+ (row_index+1);
+    $link_element.on('click', function(e) {window.history.pushState(row[1],row[1], "/" +  ethercalc_name + "/" + row[1])});
     // parse link labels
     var link_label = row[3].trim();
     var link_label_color = "";
@@ -522,7 +524,14 @@ var compile_json = function(rows){
   $('i.icon').popup();
 
   // enable tabs
-  $('#toc a.link.item').tab({onFirstLoad: function(a,b,c) {var u = this.attributes['data-url'].value  ; this.firstChild.setAttribute('src', u) }});
+  $('#pdg a').tab({onFirstLoad: function(a,b,c) {var u = this.attributes['data-url'].value  ; this.firstChild.setAttribute('src', u) }, history: false});
+  var current_tabname  = current_iframe_url;
+  if(tabnames_mapping[current_tabname]) {
+    $('#pdg a').tab('change tab', tabnames_mapping[current_tabname]);
+  }
+  else {
+    $('#pdg a').tab('change tab', 'help-tab');
+  }
 }
 
 // prepare to load or refresh csv data
@@ -744,7 +753,7 @@ $("#sidebar").on("click tap", "a.link.item", function(event){
   if(iframe_path.match(/^https:\/\/.*.hackpad.com\//)){
     iframe_path = iframe_path.split(/\//).pop();
   }
-  history.pushState(history_state,'', '/'+ethercalc_name+'/'+encodeURIComponent(encodeURIComponent(iframe_path))) ;
+  //history.pushState(history_state,'', '/'+ethercalc_name+'/'+encodeURIComponent(encodeURIComponent(iframe_path))) ;
 
   // when leaving ethercalc, show edit icon again
   if(event.target.target !== "_blank"){
@@ -817,5 +826,13 @@ $("#topbar .foldr.title").attr("href",'/'+ethercalc_name);
 $('i.icon').popup();
 
 // enable tabs
-$('.helptab').tab();
-$('.edittab').tab({onFirstLoad: function(a,b,c) {var u = this.attributes['data-url'].value  ; this.firstChild.setAttribute('src', u) }});
+//$('.helptab').tab();
+//$('.edittab').tab({onFirstLoad: function(a,b,c) {var u = this.attributes['data-url'].value  ; this.firstChild.setAttribute('src', u) }});
+//$('#pdg').tab({context: '#pdg', history: true});
+
+$('.helptab').on('click', function(e) {window.history.pushState("/","/", "/" +  ethercalc_name)});
+$('.cafetab').on('click', function(e) {window.history.pushState("/cafe","/cafe", "/" +  ethercalc_name + "/cafe")});
+window.onpopstate = function(event) {
+$('#pdg a').tab('change tab', tabnames_mapping[event.state]);
+}
+
