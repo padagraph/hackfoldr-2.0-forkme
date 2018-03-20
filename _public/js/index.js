@@ -18,7 +18,7 @@ var iframe_src;
 var foldr_histories = JSON.parse(localStorage.getItem("hackfoldr")) || [];
 var foldr_scale = JSON.parse(localStorage.getItem("hackfoldr-scale")) || "";
 
-var tabnames_mapping = {'cafe': 'cafe-tab', 'help': 'help-tab'};
+var tabnames_mapping = {'cafe': 'cafe-tab', 'help': 'help-tab', 'edit': 'edit-tab'};
 // check where the csv will come from, ethercalc or gsheet?
 if(ethercalc_name.length < 40){
   csv_api_source = 'https://ethercalc.org/_/'+ethercalc_name+'/csv';
@@ -100,6 +100,16 @@ var compile_json = function(rows){
   // for link items
   var padagraph_ids = {}
   var activeTab = "active" // to activate the first tab
+
+  var parse_pdg_options = function(str) {
+    var options_list = str.split(" ")
+                          .filter(x => x != "")
+                          .map(x => x.split(":"));
+    var options = {};
+    options_list.forEach(x => options[x[0]] = x[1]);
+    return options;
+  }
+
   var add_link = function(row_index, row){
 
     // prepare to handle link items. these variables will be used with link_template.
@@ -127,7 +137,20 @@ var compile_json = function(rows){
     //PDG: transform URL
     if(link_url.match(/PDG:[a-zA-Z]+/)){ 
       var [_,id] = row[0].match(/PDG:([a-zA-Z]+)/);
+      var options = parse_pdg_options(row[2])
       link_url = "http://botapad.padagraph.io/import/igraph.html?s=" + padagraph_ids[id] + "&nofoot=1&gid=" + id;
+      if('bg' in options) {
+        link_url += "&color=" + options['bg']
+      }
+      if('vsize' in options) {
+        link_url += "&user_vtx_size=" + options['vsize']
+      } 
+      if('fsize' in options) {
+        link_url += "&user_font_size=" + options['fsize']
+      }
+      if('adaptive_zoom' in options) {
+        link_url += "&adaptive_zoom=" + options['adaptive_zoom']
+      }
       row[0] = link_url
       row[3] = "red graph"
     }
@@ -279,7 +302,6 @@ var compile_json = function(rows){
     // append tab item to the main page
     var newTab = $('<div class="frame ui bottom attached tab" data-tab="tab-'+ (row_index + 1 ) +'" data-url="'+ link_url +'"><iframe name="iframe-' +(row_index + 1) + '"/></div>');
     $('#mainzone').append(newTab);
-    //newTab.tab({onLoad: function(a,b,c) {console.log('coucou')}})
     // set iframe src?
     if(current_iframe_url == "edit"){
       if(csv_api_source_type=="ethercalc"){
@@ -812,6 +834,7 @@ $("#topbar .edit.table").on("click tap", function(){
     $("title").text("編輯 | "+current_foldr_name+" | hackfoldr");
     // inactive #toc items
     //$("#toc a.link.item").removeClass("active");
+    $("a.edittab").tab('change tab','edit-tab');
   }
   // switch icon
   $("#topbar .edit.table").hide();
@@ -827,11 +850,12 @@ $('i.icon').popup();
 
 // enable tabs
 //$('.helptab').tab();
-//$('.edittab').tab({onFirstLoad: function(a,b,c) {var u = this.attributes['data-url'].value  ; this.firstChild.setAttribute('src', u) }});
+$('.edittab').tab({onFirstLoad: function(a,b,c) {var u = this.attributes['data-url'].value  ; this.firstChild.setAttribute('src', u) }});
 //$('#pdg').tab({context: '#pdg', history: true});
 
 $('.helptab').on('click', function(e) {window.history.pushState("/","/", "/" +  ethercalc_name)});
 $('.cafetab').on('click', function(e) {window.history.pushState("/cafe","/cafe", "/" +  ethercalc_name + "/cafe")});
+$('.edittab').on('click', function(e) {window.history.pushState("/edit","/edit", "/" +  ethercalc_name + "/edit")});
 window.onpopstate = function(event) {
 $('#pdg a').tab('change tab', tabnames_mapping[event.state]);
 }
