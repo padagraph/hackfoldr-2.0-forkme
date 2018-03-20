@@ -102,12 +102,9 @@ var compile_json = function(rows){
   var activeTab = "active" // to activate the first tab
 
   var parse_pdg_options = function(str) {
-    var options_list = str.split(" ")
-                          .filter(x => x != "")
-                          .map(x => x.split(":"));
-    var options = {};
-    options_list.forEach(x => options[x[0]] = x[1]);
-    return options;
+    return str.split(" ")
+              .filter(x => x != "")
+              .map(x => x.split(":"));
   }
 
   var add_link = function(row_index, row){
@@ -139,18 +136,9 @@ var compile_json = function(rows){
       var [_,id] = row[0].match(/PDG:([a-zA-Z]+)/);
       var options = parse_pdg_options(row[2])
       link_url = "http://botapad.padagraph.io/import/igraph.html?s=" + padagraph_ids[id] + "&nofoot=1&gid=" + id;
-      if('bg' in options) {
-        link_url += "&color=" + options['bg']
-      }
-      if('vsize' in options) {
-        link_url += "&user_vtx_size=" + options['vsize']
-      } 
-      if('fsize' in options) {
-        link_url += "&user_font_size=" + options['fsize']
-      }
-      if('adaptive_zoom' in options) {
-        link_url += "&adaptive_zoom=" + options['adaptive_zoom']
-      }
+      options.forEach(opt => {
+        link_url += "&"+ opt[0] + "=" + opt[1];
+      });
       row[0] = link_url
       row[3] = "red graph"
     }
